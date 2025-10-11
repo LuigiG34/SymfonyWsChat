@@ -1,28 +1,67 @@
 services:
   php:
-    build: ./.docker/php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: symfony_chat_php
     volumes:
       - ./:/var/www/html
     environment:
-      APP_ENV: dev
-    depends_on: []
-
-
-  ws:
-    build: ./.docker/php
-    command: php /var/www/html/bin/console app:ws:serve
-    volumes:
-      - ./:/var/www/html
+      - DATABASE_URL=mysql://chatuser:chatpass@db:3306/chatdb
+      - MERCURE_URL=http://mercure/.well-known/mercure
+      - MERCURE_PUBLIC_URL=http://localhost:3000/.well-known/mercure
+      - MERCURE_JWT_SECRET=!ChangeThisMercureHubJWTSecretKey!
     depends_on:
-      - php
+      - db
+      - mercure
+    networks:
+      - chat_network
 
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:alpine
+    container_name: symfony_chat_nginx
     ports:
-      - "8000:80"
+      - "8080:80"
     volumes:
-      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./:/var/www/html:ro
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
-      - ws
+    networks:
+      - chat_network
+
+  db:
+    image: mysql:8.0
+    container_name: symfony_chat_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: chatdb
+      MYSQL_USER: chatuser
+      MYSQL_PASSWORD: chatpass
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - chat_network
+
+  mercure:
+    image: dunglas/mercure
+    container_name: symfony_chat_mercure
+    environment:
+      SERVER_NAME: ':80'
+      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins http://localhost:8080
+    ports:
+      - "3000:80"
+    networks:
+      - chat_network
+
+volumes:
+  db_data:
+
+networks:
+  chat_network:
+    driver: bridge
