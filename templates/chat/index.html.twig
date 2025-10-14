@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat</title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div class="auth-screen" id="authScreen">
+        <h2 id="authTitle">Login</h2>
+        <div class="error hidden" id="authError"></div>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button class="btn-primary" id="authButton">Login</button>
+        <div class="switch-mode" id="switchMode">Don't have an account? <strong>Register</strong></div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div class="chat-screen" id="chatScreen">
+        <div class="container">
+            <div class="chat-header">
+                <h3>Chat App - <span id="currentUser"></span></h3>
+                <button class="btn-logout" id="logoutBtn">Logout</button>
+            </div>
+            
+            <div class="chat-layout">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <input type="text" class="search-box" id="searchBox" placeholder="Search users...">
+                    <div class="user-list" id="userList">
+                        <div style="text-align: center; color: #999; padding: 20px;">Search for users to start chatting</div>
+                    </div>
+                </div>
+                
+                <!-- Chat Area -->
+                <div class="chat-area">
+                    <div id="chatPlaceholder" class="chat-placeholder">
+                        Select a user to start chatting
+                    </div>
+                    <div id="activeChat" class="hidden">
+                        <div class="chat-header-active" id="chatHeaderActive"></div>
+                        <div class="messages" id="messages"></div>
+                        <div class="message-input">
+                            <input type="text" id="messageInput" placeholder="Type a message...">
+                            <button id="sendBtn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loader" class="hidden">
+        <p>Loading...</p>
+    </div>
+
+    <script src="/assets/script.js"></script>
+</body>
+</html>
