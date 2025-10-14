@@ -56,7 +56,7 @@ class ChatController extends AbstractController
         $message->setSender($sender);
         $message->setReceiver($receiver);
         $message->setContent($data['content']);
-        $message->setSentAt(new \DateTime());
+        $message->setSentAt(new \DateTimeImmutable());
 
         $em->persist($message);
         $em->flush();
